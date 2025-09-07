@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeleHealth Nabha - Doctor Portal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-around;
+      background: #003366;
+      padding: 15px;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+    }
+    .navbar a:hover {
+      background: #0055aa;
+      border-radius: 5px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .flex { display: flex; gap: 20px; }
+    .left, .right { flex: 1; }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .btn-blue { background: #007bff; color: white; }
+    .btn-blue:hover { background: #0069d9; }
+    .btn-green { background: #28a745; color: white; }
+    .btn-green:hover { background: #218838; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .search-box input { flex: 1; }
+    .search-box button {
+      background: #007bff;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+    .record {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .record-details {
+      display: none;
+      background: white;
+      padding: 10px;
+      margin-top: 5px;
+      border-left: 3px solid #007bff;
+    }
+    .prescription-output {
+      background: #eef7ff;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="#" onclick="showPage('consultation')">Consultation</a>
+    <a href="#" onclick="showPage('prescription')">Prescription</a>
+    <a href="#" onclick="showPage('records')">Patient Records</a>
+  </div>
+
+  <!-- Consultation Page -->
+  <div id="consultation" class="container page">
+    <h1>Consultation</h1>
+    <div class="flex">
+      <div class="left">
+        <h2>Patient Info</h2>
+        <p><strong>Name:</strong> Ramesh Kumar</p>
+        <p><strong>Age:</strong> 45</p>
+        <p><strong>Medical History:</strong> Diabetes, High BP</p>
+      </div>
+      <div class="right">
+        <h2>Doctor’s Notes</h2>
+        <textarea placeholder="Enter notes and observations..."></textarea>
+        <button class="btn btn-blue">Generate Prescription</button>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <button class="btn btn-green">Start Video Consultation</button>
+      <button class="btn btn-green">Start Chat Consultation</button>
+    </div>
+  </div>
+
+  <!-- Prescription Page -->
+  <div id="prescription" class="container page" style="display:none;">
+    <h1>Prescription</h1>
+    <form id="prescriptionForm">
+      <label><strong>Patient Name:</strong></label>
+      <input type="text" id="pName" placeholder="Enter patient name" required>
+
+      <label><strong>Symptoms:</strong></label>
+      <textarea id="pSymptoms" placeholder="Enter symptoms..." required></textarea>
+
+      <label><strong>Medicine & Dosage:</strong></label>
+      <textarea id="pMedicine" placeholder="Enter medicine & dosage..." required></textarea>
+
+      <label><strong>Advice / Instructions:</strong></label>
+      <textarea id="pAdvice" placeholder="Enter advice..." required></textarea>
+
+      <button type="submit" class="btn btn-blue">Save Prescription</button>
+    </form>
+
+    <div id="prescriptionOutput" class="prescription-output" style="display:none;">
+      <h2>Saved Prescription</h2>
+      <p><strong>Patient Name:</strong> <span id="outName"></span></p>
+      <p><strong>Symptoms:</strong> <span id="outSymptoms"></span></p>
+      <p><strong>Medicine & Dosage:</strong> <span id="outMedicine"></span></p>
+      <p><strong>Advice / Instructions:</strong> <span id="outAdvice"></span></p>
+    </div>
+  </div>
+
+  <!-- Patient Records Page -->
+  <div id="records" class="container page" style="display:none;">
+    <h1>Patient Records</h1>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by patient name...">
+      <button onclick="searchPatient()">🔍</button>
+    </div>
+    <div id="recordsList">
+      <div class="record" onclick="toggleDetails(this)">
+        <strong>Ramesh Kumar</strong> - Last Consultation: 07 Sept 2025
+        <div class="record-details">
+          <p><strong>Consultation History:</strong> 3 visits</p>
+          <p><strong>Past Notes:</strong> Controlled BP, prescribed Metformin</p>
+        </div>
+      </div>
+      <div class="record" onclick="toggleDetails(this)">
+        <strong>Sunita Devi</strong> - Last Consultation: 05 Sept 2025
+        <div class="record-details">
+          <p><strong>Consultation History:</strong> 5 visits</p>
+          <p><strong>Past Notes:</strong> Pregnancy care, supplements prescribed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Page navigation
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      document.getElementById(pageId).style.display = 'block';
+    }
+
+    // Expand patient records
+    function toggleDetails(recordElement) {
+      const details = recordElement.querySelector(".record-details");
+      details.style.display = (details.style.display === "block") ? "none" : "block";
+    }
+
+    // Search filter
+    function searchPatient() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll("#recordsList .record").forEach(record => {
+        const name = record.querySelector("strong").innerText.toLowerCase();
+        record.style.display = name.includes(query) ? "block" : "none";
+      });
+    }
+
+    // Prescription form handling
+    document.getElementById("prescriptionForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      document.getElementById("outName").innerText = document.getElementById("pName").value;
+      document.getElementById("outSymptoms").innerText = document.getElementById("pSymptoms").value;
+      document.getElementById("outMedicine").innerText = document.getElementById("pMedicine").value;
+      document.getElementById("outAdvice").innerText = document.getElementById("pAdvice").value;
+
+      document.getElementById("prescriptionOutput").style.display = "block";
+      this.reset();
+    });
+  </script>
+</body>
+</html>
